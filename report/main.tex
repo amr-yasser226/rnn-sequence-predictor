@@ -1,0 +1,81 @@
+\documentclass[twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=0.7in}
+
+\title{Sequence Prediction using Simple Recurrent Neural Networks (SimpleRNN)}
+\author{Antigravity AI Assistant}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report investigates the application of Simple Recurrent Neural Networks (SimpleRNN) for time-series forecasting. Using a synthetic sine wave dataset with added Gaussian noise, we demonstrate the architectural capacity of standard RNNs to capture periodic temporal dependencies. The experimental results show that SimpleRNN, despite its vulnerability to vanishing gradients, effectively learns local sequential patterns, achieving low mean squared error (MSE) on the prediction task.
+\end{abstract}
+
+\section{Introduction}
+Time-series prediction is a fundamental task in machine learning with applications ranging from financial forecasting to signal processing. Recurrent Neural Networks (RNNs) are specifically designed for sequential data by maintaining a hidden state that encapsulates historical context. In this study, we utilize the \texttt{SimpleRNN} architecture to predict the next value in a continuous sine wave.
+
+\section{Methodology}
+
+\subsection{Dataset Selection}
+The chosen dataset is a synthetic sine wave defined by:
+\begin{equation}
+    y(t) = \sin(t) + \epsilon
+\end{equation}
+where $\epsilon \sim \mathcal{N}(0, 0.1)$ represents Gaussian noise. A sample of the generated data is shown in Figure~\ref{fig:data}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/data_sample.png}
+    \caption{Sample of the generated sine wave with Gaussian noise.}
+    \label{fig:data}
+\end{figure}
+
+\subsection{Data Preprocessing}
+A sliding window approach was implemented with a window size of $L=20$. Given a sequence $[x_{t-L}, \dots, x_{t-1}]$, the model predicts the value $x_t$. The data was reshaped into the required 3D tensor format for Keras: (samples, time steps, features).
+
+\subsection{Model Architecture}
+The network comprises:
+\begin{itemize}
+    \item \textbf{Input Layer}: Accepts sequences of length 20.
+    \item \textbf{SimpleRNN Layer}: 32 hidden units with \textit{tanh} activation.
+    \item \textbf{Dense Output Layer}: A single neuron for linear regression.
+\end{itemize}
+The model was compiled using the Adam optimizer and Mean Squared Error (MSE) loss function.
+
+\section{Results}
+
+\subsection{Training Performance}
+The model converged rapidly. As shown in Figure~\ref{fig:loss}, the training and validation loss decreased significantly, reaching a stable plateau within 20 epochs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/training_loss.png}
+    \caption{Model training and validation loss (MSE) over epochs.}
+    \label{fig:loss}
+\end{figure}
+
+\subsection{Prediction Accuracy}
+The model successfully predicts the trajectory of the sine wave. Figure~\ref{fig:pred} illustrates the high fidelity between the predicted values and the ground truth on the test set.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/prediction_comparison.png}
+    \caption{Comparison between true values and predicted values for the test set.}
+    \label{fig:pred}
+\end{figure}
+
+\section{Discussion}
+The \texttt{SimpleRNN} layer proves sufficient for short-term periodic patterns. The model filters out high-frequency noise while preserving the underlying harmonic motion. However, for longer sequences or more complex non-periodic data, architectures like LSTM or GRU would be required.
+
+\section{Conclusion}
+This assignment demonstrates that a basic RNN architecture is highly effective for simple sequence prediction. The successful mapping of input windows to subsequent values validates the utility of stateful layers in temporal tasks.
+
+\end{document}
